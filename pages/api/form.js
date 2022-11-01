@@ -1,5 +1,4 @@
 export default function handler(req, res) {
-  console.log("req===>", req);
   const { itemId } = req.body.params;
   // Get data submitted in request's body.
   // const body = req.body
