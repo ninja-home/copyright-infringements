@@ -30,7 +30,8 @@ export default function Home() {
   const [countryName, setCountryName] = useState("");
   const [status, setStatus] = useState(null);
   const [err, setErr] = useState(null);
-
+  const [isLoading, setIsLoading] = useState(false);
+  
   const handleUrlChange = (e) => {
     setUrl(e.target.value);
     const { market, item, country } = parseUrl(e.target.value);
@@ -55,7 +56,8 @@ export default function Home() {
       setErr(null);
       return;
     }
-
+    
+    setIsLoading(true);
     await axios
       .get("/api/checkItemId", {
         params: {
@@ -65,19 +67,20 @@ export default function Home() {
       .then(function (response) {
         // handle success
         const reportStatus = response.data.status.select.name;
-        setStatus(reportStatus);
-
+        setIsLoading(false);
+        // setStatus(reportStatus);
+        // console.log('reportStatus, status ===>', reportStatus, status)
         if (
-          status === TAROT_STATUS.ARCHIEVED ||
-          status === TAROT_STATUS.CLOSED
+          reportStatus === TAROT_STATUS.ARCHIEVED ||
+          reportStatus === TAROT_STATUS.CLOSED
         ) {
-          console.log("available");
           setErr(null);
+          return
         } else {
-          console.log("status===>", status);
           setErr(
             `Item ID "${itemId}" is already in the database, since ${response.data.created_time}`
           );
+          return
         }
       })
       .catch(function (error) {
@@ -93,7 +96,6 @@ export default function Home() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log("err, status", err, status);
     if (err !== null) {
       axios
         .post("/api/form", {
@@ -110,7 +112,7 @@ export default function Home() {
   useEffect(() => {
     validateItemId(itemId);
   }, [itemId]);
-
+  
   return (
     <div className="p-2 h-screen">
       <h1 className="p-4 mb-4 text-3xl font-bold">
@@ -150,7 +152,7 @@ export default function Home() {
           label="Violations:"
           options={violationsOptions}
         />
-        <SubmitButton />
+        <SubmitButton loading={isLoading} error={err}/>
       </SimpleForm>
     </div>
   );
