@@ -14,7 +14,9 @@ export default function InputField(props) {
                     name={props.name}
                     onChange={props.onChange}
                     placeholder={props.placeholder}
-                    type={props.type} />
+                    type={props.type} 
+                    value={props.value ? props.value: ''}
+                    />
             </div>
             <div className="md:w-1/2 p-1 pl-2 text-xs text-red-600 font-bold">
                 {props.errorMessage}
