@@ -9,6 +9,7 @@ import {
   marketplaceOptions,
   countryOptions,
   violationsOptions,
+  TAROT_STATUS
 } from "../lib/constants";
 import { parseUrl } from "../lib/lib";
 import {NEW, CLOSED} from '../lib/status'
@@ -28,7 +29,9 @@ export default function Home() {
   const [itemId, setItemId] = useState("");
   const [marketPlace, setMarketPlace] = useState("");
   const [countryName, setCountryName] = useState("");
+  const [status, setStatus] = useState(null)
   const [err, setErr] = useState(null)
+  
   
   const handleUrlChange = (e) => {
     setUrl(e.target.value);
@@ -40,7 +43,7 @@ export default function Home() {
 
   const handleItemIdChange = (e) => {
     setItemId(e.target.value);
-    validateItemId(e.target.value);
+    // validateItemId(e.target.value);
   };
   
   const handleMarketPlaceChange = (e) => {
@@ -54,9 +57,7 @@ export default function Home() {
       setErr(null)
       return
     }
-    // reset error
-    // errorItemId = "zzz";
-
+    
     await axios
       .get("/api/checkItemId", {
         params: {
@@ -65,19 +66,19 @@ export default function Home() {
       })
       .then(function (response) {
         // handle success
-        const status = response.data.status.select.name;
-        if (status === CLOSED) {
-          setErr(null)
+        const reportStatus = response.data.status.select.name;
+        setStatus(reportStatus)
+        
+        if (status === TAROT_STATUS.ARCHIEVED || status === TAROT_STATUS.CLOSED) {
+          setErr(null);
         } else {
           setErr(`Item ID "${itemId}" is already in the database, since ${response.data.created_time}`)
         }
-
       })
       .catch(function (error) {
-        // handle error
-        console.warn('error===>', error);
-        if (error.status == 404) {
+        if (error.response.status === 404) {
           // Item ID not found, this is good
+          setErr(null);
         } else {
           // some other error
           setErr("Unknown error")
@@ -87,22 +88,26 @@ export default function Home() {
   
   const handleSubmit = (e) => {
     e.preventDefault();
-    
-    axios.post('/api/form', {
-      params: {
-        itemId: itemId,
-      }
-    }).then(res=> {
-      console.log('res===>', res)
-    })
+    console.log('err, status', err, status)
+    // axios.post('/api/form', {
+    //   params: {
+    //     itemId: itemId,
+    //   }
+    // }).then(res=> {
+    //   console.log('res===>', res)
+    // })
   }
 
+  useEffect(()=> {
+    validateItemId(itemId)
+  }, [itemId])
+  
   return (
-    <div className="p-2">
+    <div className="p-2 h-screen">
       <h1 className="p-4 mb-4 text-3xl font-bold">
         Report a copyright infringement
       </h1>
-      {/* <SimpleForm action="/api/form" method="post"> */}
+
       <SimpleForm onSubmit={handleSubmit}>
         <InputField
           name="url"
