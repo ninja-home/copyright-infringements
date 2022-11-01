@@ -1,7 +1,6 @@
-import { notion, databaseId } from '../../lib/notion';
+import { notion, databaseId } from "../../lib/notion";
 
 export default async function handler(req, res) {
-
   const notionResponse = await findItemById(req.query.itemId);
 
   if (!notionResponse) {
@@ -27,19 +26,6 @@ async function findItemById(itemId) {
     console.log("Item ID is empty");
     return null;
   }
-
-  // try {
-  //   const result = await notion.search({
-  //     query: '',
-  //     filter: {
-  //       property: 'object',
-  //       value: 'database'
-  //     }
-  //   });
-  //   console.log('Search: ', result);
-  // } catch (e) {
-  //   console.log(e.message ?? JSON.stringify(e));
-  // }
 
   // send request to Notion
   try {
