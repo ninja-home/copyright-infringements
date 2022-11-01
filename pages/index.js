@@ -9,10 +9,9 @@ import {
   marketplaceOptions,
   countryOptions,
   violationsOptions,
-  TAROT_STATUS
+  TAROT_STATUS,
 } from "../lib/constants";
 import { parseUrl } from "../lib/lib";
-import {NEW, CLOSED} from '../lib/status'
 
 /*
 TODO:
@@ -29,13 +28,12 @@ export default function Home() {
   const [itemId, setItemId] = useState("");
   const [marketPlace, setMarketPlace] = useState("");
   const [countryName, setCountryName] = useState("");
-  const [status, setStatus] = useState(null)
-  const [err, setErr] = useState(null)
-  
-  
+  const [status, setStatus] = useState(null);
+  const [err, setErr] = useState(null);
+
   const handleUrlChange = (e) => {
     setUrl(e.target.value);
-    const {market, item, country } = parseUrl(e.target.value);
+    const { market, item, country } = parseUrl(e.target.value);
     setMarketPlace(market);
     setItemId(item);
     setCountryName(country);
@@ -45,19 +43,19 @@ export default function Home() {
     setItemId(e.target.value);
     // validateItemId(e.target.value);
   };
-  
+
   const handleMarketPlaceChange = (e) => {
     setMarketPlace(e.target.value);
   };
-  
+
   async function validateItemId(itemId) {
     // const itemId = e.target.value;
     console.info(`Validating item ID (${itemId})`);
     if (!itemId) {
-      setErr(null)
-      return
+      setErr(null);
+      return;
     }
-    
+
     await axios
       .get("/api/checkItemId", {
         params: {
@@ -67,12 +65,19 @@ export default function Home() {
       .then(function (response) {
         // handle success
         const reportStatus = response.data.status.select.name;
-        setStatus(reportStatus)
-        
-        if (status === TAROT_STATUS.ARCHIEVED || status === TAROT_STATUS.CLOSED) {
+        setStatus(reportStatus);
+
+        if (
+          status === TAROT_STATUS.ARCHIEVED ||
+          status === TAROT_STATUS.CLOSED
+        ) {
+          console.log("available");
           setErr(null);
         } else {
-          setErr(`Item ID "${itemId}" is already in the database, since ${response.data.created_time}`)
+          console.log("status===>", status);
+          setErr(
+            `Item ID "${itemId}" is already in the database, since ${response.data.created_time}`
+          );
         }
       })
       .catch(function (error) {
@@ -81,27 +86,31 @@ export default function Home() {
           setErr(null);
         } else {
           // some other error
-          setErr("Unknown error")
+          setErr("Unknown error");
         }
       });
   }
-  
+
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log('err, status', err, status)
-    // axios.post('/api/form', {
-    //   params: {
-    //     itemId: itemId,
-    //   }
-    // }).then(res=> {
-    //   console.log('res===>', res)
-    // })
-  }
+    console.log("err, status", err, status);
+    if (err !== null) {
+      axios
+        .post("/api/form", {
+          params: {
+            itemId: itemId,
+          },
+        })
+        .then((res) => {
+          console.log("res===>", res);
+        });
+    }
+  };
 
-  useEffect(()=> {
-    validateItemId(itemId)
-  }, [itemId])
-  
+  useEffect(() => {
+    validateItemId(itemId);
+  }, [itemId]);
+
   return (
     <div className="p-2 h-screen">
       <h1 className="p-4 mb-4 text-3xl font-bold">
