@@ -22,25 +22,29 @@ TODO:
   - parse etsy links
   - parse mercari links
 */
-var errorItemId = "";
 
 export default function Home() {
   const [url, setUrl] = useState("");
   const [itemId, setItemId] = useState("");
   const [marketPlace, setMarketPlace] = useState("");
-  const [country, setCountry] = useState("");
+  const [countryName, setCountryName] = useState("");
   const [err, setErr] = useState(null)
   
   const handleUrlChange = (e) => {
     setUrl(e.target.value);
-    const parsed = parseUrl(e.target.value);
-    setItemId(parsed.itemId);
-    setCountry(parsed.country);
+    const {market, item, country } = parseUrl(e.target.value);
+    setMarketPlace(market);
+    setItemId(item);
+    setCountryName(country);
   };
 
   const handleItemIdChange = (e) => {
     setItemId(e.target.value);
     validateItemId(e.target.value);
+  };
+  
+  const handleMarketPlaceChange = (e) => {
+    setMarketPlace(e.target.value);
   };
   
   async function validateItemId(itemId) {
@@ -67,10 +71,7 @@ export default function Home() {
         } else {
           setErr(`Item ID "${itemId}" is already in the database, since ${response.data.created_time}`)
         }
-        // console.log('status===>', status)
-        // setErr(`Item ID "${itemId}" is already in the database, since ${response.data.created_time}`);
-        // errorItemId = `Item ID "${itemId}" is already in the database, since ${response.data.created_time}`;
-        // console.log(errorItemId);
+
       })
       .catch(function (error) {
         // handle error
@@ -114,14 +115,14 @@ export default function Home() {
           label="Marketplace:"
           options={marketplaceOptions}
           value={marketPlace}
-          onChange={(e) => setMarketPlace(e.target.value)}
+          onChange={handleMarketPlaceChange}
         />
         <SelectField
           name="country"
           label="Country:"
           options={countryOptions}
-          value={country}
-          onChange={(e) => setCountry(e.target.value)}
+          value={countryName}
+          onChange={(e) => setCountryName(e.target.value)}
         />
         <InputField
           name="itemId"
