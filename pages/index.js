@@ -31,7 +31,7 @@ export default function Home() {
   const [status, setStatus] = useState(null);
   const [err, setErr] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
-  
+
   const handleUrlChange = (e) => {
     setUrl(e.target.value);
     const { market, item, country } = parseUrl(e.target.value);
@@ -52,12 +52,13 @@ export default function Home() {
   async function validateItemId(itemId) {
     // const itemId = e.target.value;
     console.info(`Validating item ID (${itemId})`);
+    setIsLoading(true);
+
     if (!itemId) {
       setErr(null);
       return;
     }
-    
-    setIsLoading(true);
+
     await axios
       .get("/api/checkItemId", {
         params: {
@@ -75,18 +76,19 @@ export default function Home() {
           reportStatus === TAROT_STATUS.CLOSED
         ) {
           setErr(null);
-          return
+          return;
         } else {
           setErr(
             `Item ID "${itemId}" is already in the database, since ${response.data.created_time}`
           );
-          return
+          return;
         }
       })
       .catch(function (error) {
         if (error.response.status === 404) {
           // Item ID not found, this is good
           setErr(null);
+          setIsLoading(false);
         } else {
           // some other error
           setErr("Unknown error");
@@ -96,7 +98,7 @@ export default function Home() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (err !== null) {
+    if (err === null) {
       axios
         .post("/api/form", {
           params: {
@@ -112,7 +114,7 @@ export default function Home() {
   useEffect(() => {
     validateItemId(itemId);
   }, [itemId]);
-  
+
   return (
     <div className="p-2 h-screen">
       <h1 className="p-4 mb-4 text-3xl font-bold">
@@ -152,7 +154,7 @@ export default function Home() {
           label="Violations:"
           options={violationsOptions}
         />
-        <SubmitButton loading={isLoading} error={err}/>
+        <SubmitButton loading={isLoading} error={err} />
       </SimpleForm>
     </div>
   );
