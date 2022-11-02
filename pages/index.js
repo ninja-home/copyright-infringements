@@ -1,17 +1,18 @@
 import React, { useEffect, useState } from "react";
+import axios from "axios";
+
 import SimpleForm from "../components/simpleForm";
 import InputField from "../components/inputField";
 import SelectField from "../components/selectField";
 import SubmitButton from "../components/submitButton";
 import CheckboxGroupField from "../components/checkboxGroupField";
-import axios from "axios";
 import {
   marketplaceOptions,
   countryOptions,
   violationsOptions,
   TAROT_STATUS,
 } from "../lib/constants";
-import { parseUrl } from "../lib/lib";
+import { parseUrl, useDebounce } from "../lib/lib";
 
 /*
 TODO:
@@ -26,6 +27,7 @@ TODO:
 export default function Home() {
   const [url, setUrl] = useState("");
   const [itemId, setItemId] = useState("");
+  const debouncedValue = useDebounce(itemId, 1500);
   const [marketPlace, setMarketPlace] = useState("");
   const [countryName, setCountryName] = useState("");
   const [status, setStatus] = useState(null);
@@ -115,7 +117,7 @@ export default function Home() {
 
   useEffect(() => {
     validateItemId(itemId);
-  }, [itemId]);
+  }, [debouncedValue]);
 
   console.log('===> violations', violations)
   return (
