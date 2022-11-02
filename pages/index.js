@@ -51,14 +51,13 @@ export default function Home() {
 
   async function validateItemId(itemId) {
     // const itemId = e.target.value;
-    console.info(`Validating item ID (${itemId})`);
-    setIsLoading(true);
-
     if (!itemId) {
       setErr(null);
       return;
     }
-
+    console.info(`Validating item ID (${itemId})`);
+    setIsLoading(true);
+    
     await axios
       .get("/api/checkItemId", {
         params: {
