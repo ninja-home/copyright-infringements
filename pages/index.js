@@ -31,6 +31,7 @@ export default function Home() {
   const [status, setStatus] = useState(null);
   const [err, setErr] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [violations, setViolations] = useState([]);
 
   const handleUrlChange = (e) => {
     setUrl(e.target.value);
@@ -42,7 +43,6 @@ export default function Home() {
 
   const handleItemIdChange = (e) => {
     setItemId(e.target.value);
-    // validateItemId(e.target.value);
   };
 
   const handleMarketPlaceChange = (e) => {
@@ -50,14 +50,13 @@ export default function Home() {
   };
 
   async function validateItemId(itemId) {
-    // const itemId = e.target.value;
     if (!itemId) {
       setErr(null);
       return;
     }
     console.info(`Validating item ID (${itemId})`);
     setIsLoading(true);
-    
+
     await axios
       .get("/api/checkItemId", {
         params: {
@@ -67,13 +66,11 @@ export default function Home() {
       .then(function (response) {
         // handle success
         const reportStatus = response.data.status.select.name;
-        console.log('item status===> ', reportStatus);
+        console.log("item status===> ", reportStatus);
         setIsLoading(false);
-        // setStatus(reportStatus);
-        // console.log('reportStatus, status ===>', reportStatus, status)
         if (
           reportStatus === TAROT_STATUS.ARCHIEVED ||
-          reportStatus === TAROT_STATUS.CLOSED || 
+          reportStatus === TAROT_STATUS.CLOSED ||
           reportStatus === TAROT_STATUS.BRAND_NEW
         ) {
           setErr(null);
@@ -104,6 +101,10 @@ export default function Home() {
         .post("/api/form", {
           params: {
             itemId: itemId,
+            url: url,
+            marketPlace: marketPlace,
+            countryName: countryName,
+            violations: violations
           },
         })
         .then((res) => {
@@ -116,6 +117,7 @@ export default function Home() {
     validateItemId(itemId);
   }, [itemId]);
 
+  console.log('===> violations', violations)
   return (
     <div className="p-2 h-screen">
       <h1 className="p-4 mb-4 text-3xl font-bold">
@@ -154,6 +156,8 @@ export default function Home() {
           name="violations"
           label="Violations:"
           options={violationsOptions}
+          setViolations={setViolations}
+          violations={violations}
         />
         <SubmitButton loading={isLoading} error={err} />
       </SimpleForm>
