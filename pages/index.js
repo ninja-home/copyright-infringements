@@ -67,12 +67,14 @@ export default function Home() {
       .then(function (response) {
         // handle success
         const reportStatus = response.data.status.select.name;
+        console.log('item status===> ', reportStatus);
         setIsLoading(false);
         // setStatus(reportStatus);
         // console.log('reportStatus, status ===>', reportStatus, status)
         if (
           reportStatus === TAROT_STATUS.ARCHIEVED ||
-          reportStatus === TAROT_STATUS.CLOSED
+          reportStatus === TAROT_STATUS.CLOSED || 
+          reportStatus === TAROT_STATUS.BRAND_NEW
         ) {
           setErr(null);
           return;

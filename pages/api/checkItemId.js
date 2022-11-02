@@ -4,8 +4,18 @@ export default async function handler(req, res) {
   const notionResponse = await findItemById(req.query.itemId);
 
   if (!notionResponse) {
-    // Item ID not found
-    res.status(404).json({});
+    // Item ID not found from the database
+    const noItemObject = {
+      created_time: null,
+      status: {
+        select: {
+          name: "Brandnew",
+        },
+      },
+      url: null,
+    };
+    // res.status(404).json(noItemObject);
+    res.status(200).json(noItemObject);
   } else {
     const returnedObject = {
       created_time: notionResponse.created_time,
@@ -46,7 +56,7 @@ async function findItemById(itemId) {
     }
 
     console.log("Found Item ID in Notion");
-    console.log(response.results[0]);
+    // console.log(response.results[0]);
 
     return response.results[0];
   } catch (e) {
