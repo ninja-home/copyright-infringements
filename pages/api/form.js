@@ -22,7 +22,7 @@ export default async function handler(req, res) {
   } catch (e) {
     res.status(404).json({
       submit_status: false,
-      message: "server not found",
+      message: "server not found. Start webhook!",
     });
   }
   res.end();
