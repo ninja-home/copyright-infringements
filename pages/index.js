@@ -6,6 +6,7 @@ import InputField from "../components/inputField";
 import SelectField from "../components/selectField";
 import SubmitButton from "../components/submitButton";
 import CheckboxGroupField from "../components/checkboxGroupField";
+import MessageField from "../components/messageField";
 import {
   marketplaceOptions,
   countryOptions,
@@ -35,7 +36,10 @@ export default function Home() {
   const [err, setErr] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [submitLoading, setSubmitLoading] = useState(false);
-  const [reset, setReset] = useState(false);
+  const [message, setMessage] = useState({
+    data: "",
+    error: null,
+  });
 
   const handleUrlChange = (e) => {
     setUrl(e.target.value.trim());
@@ -133,21 +137,31 @@ export default function Home() {
         .then((res) => {
           setSubmitLoading(false);
           if (res.data.submit_status) {
-            alert("successfully submitted");
-            setReset(true);
+            setMessage({
+              data: "Thank you for your submission.",
+              error: false,
+            });
+            setTimeout(() => {
+              handleContinue();
+            }, 1000);
           } else {
-            alert("something wrong");
+            setMessage({
+              data: 'There was an internal error. Please contact our support and then email to <a mailto="help@siren.com">help@siren.com</a>',
+              error: true,
+            });
           }
         })
         .catch(function (error) {
           setSubmitLoading(false);
-          alert(error.response.data.message);
+          setMessage({
+            data: error.response.data.message,
+            error: true,
+          });
         });
     }
   };
 
   const handleContinue = () => {
-    setReset(false);
     setUrl("");
     setUrlErr("");
     setItemId("");
@@ -168,7 +182,7 @@ export default function Home() {
       <h1 className="p-4 mb-4 text-3xl font-bold">
         Report a copyright infringement
       </h1>
-
+      <MessageField message={message} />
       <SimpleForm onSubmit={handleSubmit}>
         <InputField
           name="url"
@@ -206,15 +220,6 @@ export default function Home() {
           violations={violations}
         />
         <SubmitButton loading={isLoading || submitLoading} error={err} />
-        <button
-          className={`shadow bg-indigo-500 hover:bg-purple-400 focus:shadow-outline focus:outline-none text-white font-bold py-2 px-4 m-4 rounded ${
-            reset ? "show" : "hidden"
-          }`}
-          onClick={handleContinue}
-          type="button"
-        >
-          Reset
-        </button>
       </SimpleForm>
     </div>
   );

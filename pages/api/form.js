@@ -22,7 +22,8 @@ export default async function handler(req, res) {
   } catch (e) {
     res.status(404).json({
       submit_status: false,
-      message: "server not found. Start webhook!",
+      message:
+        "There was an internal error. Please contact our support and then email to help@siren.com",
     });
   }
   res.end();

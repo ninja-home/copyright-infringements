@@ -20,7 +20,7 @@ export default function InputField(props) {
           value={props.value ? props.value : ""}
         />
       </div>
-      <div className="md:w-1/2 p-1 pl-2 text-xs text-red-600 font-bold">
+      <div className="md:w-1/2 p-1 pl-2 text-xs text-red-400 font-bold">
         {props.errorMessage}
       </div>
     </div>

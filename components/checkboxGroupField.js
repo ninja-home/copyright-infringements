@@ -43,9 +43,6 @@ export default function CheckboxGroupField({
           </div>
         ))}
       </div>
-      {/* <div className="md:w-1/2 p-1 pl-2 text-xs text-red-600 font-bold">
-        {errorMessage}
-      </div> */}
     </div>
   );
 }
