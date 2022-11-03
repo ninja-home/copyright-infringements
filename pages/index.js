@@ -113,7 +113,7 @@ export default function Home() {
       return;
     }
 
-    if (itemId === "") {
+    if (!itemId) {
       setErr("itemID is required");
       return;
     }
