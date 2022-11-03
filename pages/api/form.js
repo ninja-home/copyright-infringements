@@ -1,29 +1,29 @@
 import axios from "axios";
 
-const webhook = 'https://n8n.sirenimports.com/webhook-test/7087828d-51ce-40a6-907d-2c5439022e23'
+const webhook =
+  "https://n8n.sirenimports.com/webhook-test/7087828d-51ce-40a6-907d-2c5439022e23";
 
 export default async function handler(req, res) {
-  const webhookResponse = await callWebHook(req.body.params);
-  console.log(webhookResponse)
-}
-
-async function callWebHook(params) {
-  // check for empty string
-  if (!params) {
-    console.log("params invalid");
-    return null;
+  if (!req.body.params) {
+    res.status(200).json({
+      submit_status: false,
+    });
   }
 
   // send request to Webhook
   try {
-    const response = await webhookResponse.post(webhook, {
-      params: params
+    const response = await axios.post(webhook, {
+      params: req.body.params,
     });
 
-    console.log('response===>', response);
-
-    return response;
+    res.status(200).json({
+      submit_status: true,
+    });
   } catch (e) {
     console.log(JSON.stringify(e));
+    res.status(200).json({
+      submit_status: false,
+    });
   }
+  res.end();
 }

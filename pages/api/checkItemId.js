@@ -49,15 +49,12 @@ async function findItemById(itemId) {
       },
     });
 
-    console.log(response);
     if (response.results.length == 0) {
-      console.log("Item ID not found", itemId);
+      // itemID Not found
       return null;
     }
 
     console.log("Found Item ID in Notion");
-    // console.log(response.results[0]);
-
     return response.results[0];
   } catch (e) {
     console.log(JSON.stringify(e));

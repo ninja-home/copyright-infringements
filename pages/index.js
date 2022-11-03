@@ -26,32 +26,41 @@ TODO:
 
 export default function Home() {
   const [url, setUrl] = useState("");
+  const [urlErr, setUrlErr] = useState("");
   const [itemId, setItemId] = useState("");
   const debouncedValue = useDebounce(itemId, 1500);
   const [marketPlace, setMarketPlace] = useState("");
   const [countryName, setCountryName] = useState("");
-  const [status, setStatus] = useState(null);
+  const [violations, setViolations] = useState([]);
   const [err, setErr] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
-  const [violations, setViolations] = useState([]);
+  const [submitLoading, setSubmitLoading] = useState(false);
 
   const handleUrlChange = (e) => {
-    setUrl(e.target.value);
+    setUrl(e.target.value.trim());
     const { market, item, country } = parseUrl(e.target.value);
     setMarketPlace(market);
-    setItemId(item);
+    if (item.error) {
+      setItemId("");
+      if (url !== "") {
+        setUrlErr("Invalid URL");
+      }
+    } else {
+      setUrlErr("");
+      setItemId(item.data);
+    }
     setCountryName(country);
   };
 
   const handleItemIdChange = (e) => {
-    setItemId(e.target.value);
+    setItemId(e.target.value.trim());
   };
 
   const handleMarketPlaceChange = (e) => {
     setMarketPlace(e.target.value);
   };
 
-  async function validateItemId(itemId) {
+  const validateItemId = async (itemId) => {
     if (!itemId) {
       setErr(null);
       return;
@@ -94,11 +103,22 @@ export default function Home() {
           setErr("Unknown error");
         }
       });
-  }
+  };
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    if (urlErr) {
+      alert("invalid Url");
+      return;
+    }
+
+    if (itemId === "") {
+      setErr("itemID is required");
+      return;
+    }
+
     if (err === null) {
+      setSubmitLoading(true);
       axios
         .post("/api/form", {
           params: {
@@ -106,11 +126,16 @@ export default function Home() {
             url: url,
             marketPlace: marketPlace,
             countryName: countryName,
-            violations: violations
+            violations: violations,
           },
         })
         .then((res) => {
-          console.log("res===>", res);
+          setSubmitLoading(false);
+          if (res.data.submit_status) {
+            alert("successfully submitted");
+          } else {
+            alert("something wrong");
+          }
         });
     }
   };
@@ -119,7 +144,6 @@ export default function Home() {
     validateItemId(itemId);
   }, [debouncedValue]);
 
-  console.log('===> violations', violations)
   return (
     <div className="p-2 h-screen">
       <h1 className="p-4 mb-4 text-3xl font-bold">
@@ -132,6 +156,7 @@ export default function Home() {
           label="URL:"
           value={url}
           onChange={handleUrlChange}
+          errorMessage={urlErr}
         />
         <SelectField
           name="marketplace"
@@ -161,7 +186,7 @@ export default function Home() {
           setViolations={setViolations}
           violations={violations}
         />
-        <SubmitButton loading={isLoading} error={err} />
+        <SubmitButton loading={isLoading || submitLoading} error={err} />
       </SimpleForm>
     </div>
   );

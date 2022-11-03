@@ -1,13 +1,24 @@
 import { useCallback } from "react";
 
-export default function CheckboxGroupField({name, label, options, setViolations, violations}) {
-  const onInputChange = useCallback((checked, item) => {
-    if (checked) {
-      setViolations([...violations, item])
-    } else {
-      setViolations(violations.filter(violation => violation.text !== item.text))
-    }
-  }, [violations])
+export default function CheckboxGroupField({
+  name,
+  label,
+  options,
+  setViolations,
+  violations,
+}) {
+  const onInputChange = useCallback(
+    (checked, item) => {
+      if (checked) {
+        setViolations([...violations, item]);
+      } else {
+        setViolations(
+          violations.filter((violation) => violation.text !== item.text)
+        );
+      }
+    },
+    [violations]
+  );
   return (
     <div className="md:flex md:items-center mb-6">
       <div className="md:w-1/4">
