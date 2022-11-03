@@ -35,6 +35,7 @@ export default function Home() {
   const [err, setErr] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [submitLoading, setSubmitLoading] = useState(false);
+  const [reset, setReset] = useState(false);
 
   const handleUrlChange = (e) => {
     setUrl(e.target.value.trim());
@@ -133,11 +134,29 @@ export default function Home() {
           setSubmitLoading(false);
           if (res.data.submit_status) {
             alert("successfully submitted");
+            setReset(true);
           } else {
             alert("something wrong");
           }
+        })
+        .catch(function (error) {
+          setSubmitLoading(false);
+          alert(error.response.data.message);
         });
     }
+  };
+
+  const handleContinue = () => {
+    setReset(false);
+    setUrl("");
+    setUrlErr("");
+    setItemId("");
+    setMarketPlace("");
+    setCountryName("");
+    setViolations([]);
+    setErr(null);
+    setIsLoading(false);
+    setSubmitLoading(false);
   };
 
   useEffect(() => {
@@ -187,6 +206,15 @@ export default function Home() {
           violations={violations}
         />
         <SubmitButton loading={isLoading || submitLoading} error={err} />
+        <button
+          className={`shadow bg-indigo-500 hover:bg-purple-400 focus:shadow-outline focus:outline-none text-white font-bold py-2 px-4 m-4 rounded ${
+            reset ? "show" : "hidden"
+          }`}
+          onClick={handleContinue}
+          type="button"
+        >
+          Reset
+        </button>
       </SimpleForm>
     </div>
   );
